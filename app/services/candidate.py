@@ -1,0 +1,70 @@
+from sqlalchemy.orm import Session
+from app.dto.candidate import CandidateProfileResponse, CandidateProfile
+from app.models.candidate import Candidate
+from app.dto.user import User
+from fastapi import HTTPException
+from supabase import create_client, Client
+import os
+from fastapi.responses import JSONResponse
+
+# Initialize Supabase client
+supabase: Client = create_client(
+    os.getenv("SUPABASE_URL", ""),
+    os.getenv("SUPABASE_KEY", "")
+)
+
+def create_profile(db: Session, data: CandidateProfile, user: User):
+    profile = Candidate(
+        user_id=user.id,
+        current_position = data.current_position,
+        location = data.location,
+        links = data.links,
+        demographics = data.demographics,
+        resume_url = data.resume_url,
+        skills = data.resume_url,
+    )
+    
+    db.add(profile)
+    db.commit()
+    db.refresh(profile)
+    return profile
+
+def fetch_profile(db: Session, user: User):
+    profile = db.query(Candidate).filter_by(user_id=user.id).first()
+    if not profile:
+        raise HTTPException(404, "Profile not found")
+    return profile
+
+def put_profile(db: Session, user: User, data: CandidateProfile):
+    profile = db.query(Candidate).filter_by(user_id=user.id).first()
+
+    if not profile:
+        create_profile(db, user=user, data=data)
+    
+    for field, value in data.dict(exclude_unset=True).items():
+        setattr(profile, field, value)
+    db.commit()
+    db.refresh(profile)
+    return profile
+
+def gen_signed_url(user: User, filename: str):
+    file_path = f"resumes/{user.id}/{filename}"
+    
+    signed_url = supabase.storage.from_("resumes").create_signed_upload_url(file_path)
+    
+    return JSONResponse({
+        "signed_url": signed_url["signed_url"],
+        "token": signed_url["token"],
+        "file_path": file_path
+    })
+
+def get_resume_signed_url(file_path: str):
+
+    signed_url = supabase.storage.from_("resumes").create_signed_url(
+        file_path,
+        3600  
+    )
+    print(f"url: {signed_url}")
+    return JSONResponse({
+        "signed_url": signed_url["signedUrl"]
+    })
