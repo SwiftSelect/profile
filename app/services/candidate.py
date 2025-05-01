@@ -35,6 +35,12 @@ def fetch_profile(db: Session, user: User):
         raise HTTPException(404, "Profile not found")
     return profile
 
+def fetch_profile_by_id(db: Session, id: int):
+    profile = db.query(Candidate).filter_by(id=id).first()
+    if not profile:
+        raise HTTPException(404, "Profile not found")
+    return profile
+
 def put_profile(db: Session, user: User, data: CandidateProfile):
     profile = db.query(Candidate).filter_by(user_id=user.id).first()
 
