@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from supabase import create_client, Client
 import os
 from fastapi.responses import JSONResponse
+from app.services.kafka_producer import produce_profile_update
 
 # Initialize Supabase client
 supabase: Client = create_client(
@@ -21,12 +22,15 @@ def create_profile(db: Session, data: CandidateProfile, user: User):
         links = data.links,
         demographics = data.demographics,
         resume_url = data.resume_url,
-        skills = data.resume_url,
+        skills = data.skills,
+        phone = data.phone
     )
     
     db.add(profile)
     db.commit()
     db.refresh(profile)
+    if data.resume_url:
+        produce_profile_update(user.id, data.resume_url)
     return profile
 
 def fetch_profile(db: Session, user: User):
@@ -45,12 +49,14 @@ def put_profile(db: Session, user: User, data: CandidateProfile):
     profile = db.query(Candidate).filter_by(user_id=user.id).first()
 
     if not profile:
-        create_profile(db, user=user, data=data)
-    
-    for field, value in data.dict(exclude_unset=True).items():
-        setattr(profile, field, value)
+        profile = create_profile(db, user=user, data=data)
+    else:
+        for field, value in data.dict(exclude_unset=True).items():
+            setattr(profile, field, value)
     db.commit()
     db.refresh(profile)
+    if data.resume_url:
+        produce_profile_update(user.id, data.resume_url)
     return profile
 
 def gen_signed_url(user: User, filename: str):

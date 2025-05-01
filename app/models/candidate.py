@@ -8,6 +8,7 @@ class Candidate(Base):
     user_id = Column(Integer, unique=True)
     current_position = Column(String)
     location = Column(String)
+    phone = Column(String, unique=True)
     resume_url = Column(String)
     links = Column(JSON)
     demographics = Column(JSON)

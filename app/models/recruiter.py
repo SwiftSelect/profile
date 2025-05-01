@@ -6,5 +6,6 @@ class Recruiter(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, unique=True)
-    full_name = Column(String)
-    company_name = Column(String)
+    phone = Column(String, unique=True)
+    current_position = Column(String)
+    location = Column(String)
