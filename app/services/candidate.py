@@ -17,11 +17,11 @@ supabase: Client = create_client(
 def create_profile(db: Session, data: CandidateProfile, user: User):
     profile = Candidate(
         user_id=user.id,
-        current_position = data.current_position,
+        current_position = data.currentPosition,
         location = data.location,
         links = data.links,
         demographics = data.demographics,
-        resume_url = data.resume_url,
+        resume_url = data.resumeUrl,
         skills = data.skills,
         phone = data.phone
     )
