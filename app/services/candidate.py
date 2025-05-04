@@ -29,8 +29,8 @@ def create_profile(db: Session, data: CandidateProfile, user: User):
     db.add(profile)
     db.commit()
     db.refresh(profile)
-    if data.resume_url:
-        produce_profile_update(user.id, data.resume_url)
+    if data.resumeUrl:
+        produce_profile_update(user.id, data.resumeUrl)
     return profile
 
 def fetch_profile(db: Session, user: User):
@@ -40,7 +40,7 @@ def fetch_profile(db: Session, user: User):
     return profile
 
 def fetch_profile_by_id(db: Session, id: int):
-    profile = db.query(Candidate).filter_by(id=id).first()
+    profile = db.query(Candidate).filter_by(user_id=id).first()
     if not profile:
         raise HTTPException(404, "Profile not found")
     return profile
@@ -53,10 +53,10 @@ def put_profile(db: Session, user: User, data: CandidateProfile):
     else:
         for field, value in data.dict(exclude_unset=True).items():
             setattr(profile, field, value)
-    db.commit()
-    db.refresh(profile)
-    if data.resume_url:
-        produce_profile_update(user.id, data.resume_url)
+        db.commit()
+        db.refresh(profile)
+        if data.resumeUrl:
+            produce_profile_update(user.id, data.resumeUrl)
     return profile
 
 def gen_signed_url(user: User, filename: str):

@@ -21,8 +21,8 @@ producer = Producer(config)
 
 def produce_profile_update(user_id, resume_url):
     message = {
-        "candidate_id": user_id,
-        "resume_url": resume_url
+        "candidateId": user_id,
+        "resumeUrl": resume_url
     }
 
     producer.produce("candidate_topic", value=json.dumps(message))
