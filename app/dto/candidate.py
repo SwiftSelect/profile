@@ -3,9 +3,9 @@ from typing import Optional, Dict
 
 class CandidateProfile(BaseModel):
     location: Optional[str]
-    currentPosition: Optional[str] = Field(alias="current_position")
+    currentPosition: Optional[str]
     phone: Optional[str]
-    resumeUrl: Optional[str] = Field(alias="resume_url")
+    resumeUrl: Optional[str]
     links: Optional[Dict[str, str]]
     skills: Optional[list[str]]
     demographics: Optional[Dict[str, str]]
