@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, Dict
 
 class CandidateProfile(BaseModel):
@@ -11,12 +11,13 @@ class CandidateProfile(BaseModel):
     demographics: Optional[Dict[str, str]]
 
 class CandidateProfileResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     id: int
     user_id: int
     location: Optional[str]
-    currentPosition: Optional[str] = Field(alias="current_position")
+    current_position: Optional[str] = Field(alias="currentPosition")
     phone: Optional[str]
-    resumeUrl: Optional[str] = Field(alias="resume_url")
+    resume_url: Optional[str] = Field(alias="resumeUrl")
     links: Optional[Dict[str, str]]
     skills: Optional[list[str]]
     demographics: Optional[Dict[str, str]]
