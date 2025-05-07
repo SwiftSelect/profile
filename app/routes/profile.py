@@ -20,7 +20,7 @@ def get_profile(db: Session = Depends(get_db), authorization: Optional[str] = He
     else:
         return get_rec_profile(user=user,  db=db)
     
-@router.get("/{id}", response_model=CandidateProfileResponse)
+@router.get("/get-profile/{id}", response_model=CandidateProfileResponse)
 def get_profile_by_id(id: int, db: Session = Depends(get_db)):
     return get_cand_profile_by_id(id=id, db=db)
     
