@@ -36,7 +36,7 @@ def create_profile(db: Session, data: CandidateProfile, user: User):
 def fetch_profile(db: Session, user: User):
     profile = db.query(Candidate).filter_by(user_id=user.id).first()
     if not profile:
-        raise HTTPException(404, "Profile not found")
+        raise HTTPException(404, "Profile doesn't exist, please create one")
     return profile
 
 def fetch_profile_by_id(db: Session, id: int):

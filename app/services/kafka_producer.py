@@ -24,6 +24,6 @@ def produce_profile_update(user_id, resume_url):
         "candidateId": user_id,
         "resumeUrl": resume_url
     }
-
+    print(f"Producing candidate update: {message}")
     producer.produce("candidate_topic", value=json.dumps(message))
     producer.flush()

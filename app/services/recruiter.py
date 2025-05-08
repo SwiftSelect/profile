@@ -14,17 +14,17 @@ def create_profile(db: Session, user: User, data: RecruiterProfileCreate):
 def fetch_profile(db: Session, user: User):
     profile = db.query(Recruiter).filter_by(user_id=user.id).first()
     if not profile:
-        raise HTTPException(404, "Profile not found")
+        raise HTTPException(404, "Profile doesn't exist, please create one")
     return profile
 
 def put_profile(db: Session, user: User, data: RecruiterProfileCreate):
     profile = db.query(Recruiter).filter_by(user_id=user.id).first()
 
     if not profile:
-        raise HTTPException(404, "Recruiter Profile not found")
-    
-    for field, value in data.dict(exclude_unset=True).items():
-        setattr(profile, field, value)
-    db.commit()
-    db.refresh(profile)
+        profile = create_profile(db, user, data)
+    else:
+        for field, value in data.dict(exclude_unset=True).items():
+            setattr(profile, field, value)
+        db.commit()
+        db.refresh(profile)
     return profile
